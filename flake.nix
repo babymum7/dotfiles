@@ -20,6 +20,8 @@
 
   outputs = inputs@{ self, nixpkgs, nix-darwin, home-manager }:
     let
+      # Centralized local username configuration.
+      # Sửa tên user ở đây hoặc chạy ./bootstrap.sh --user <tên_user>
       user = "username";
     in {
       # 1. macOS configuration (nix-darwin + home-manager)
@@ -35,7 +37,7 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = { inherit user; };
-            # Change "username" to your actual macOS local username
+            # Dynamically imported using the centralized 'user' variable above
             home-manager.users.${user} = import ./home/macos.nix;
           }
         ];

@@ -34,43 +34,34 @@ Nếu muốn gỡ cài đặt sạch sẽ Determinate Nix, hãy chạy lệnh sa
 
 ## 2. Chuẩn bị cấu hình trước khi chạy
 
-Trước khi áp dụng cấu hình lên máy, bạn cần cập nhật tên người dùng cục bộ (local username) của mình trong các file sau:
+Trước khi chạy, script `bootstrap.sh` sẽ tự động cập nhật tên người dùng cục bộ (local username) vào biến `user` trung tâm trong `flake.nix` và tự động kế thừa vào cấu hình Home Manager.
 
-1. **`flake.nix`**:
-   * Tìm dòng `home-manager.users.username` và đổi `username` thành tên user trên macOS của bạn.
-2. **`home/macos.nix`**:
-   * Đổi `home.username = "username";` và `home.homeDirectory = "/Users/username";` cho đúng với macOS của bạn.
-3. **`home/linux.nix`**:
-   * Đổi `home.username = "username";` và `home.homeDirectory = "/home/username";` cho đúng với Linux của bạn.
-
+Nếu muốn chạy thủ công, bạn chỉ cần sửa biến `user` ở đầu file `flake.nix`.
 ---
 
 ## 3. Áp dụng cấu hình (Apply)
 
-### A. Trên macOS
-Sử dụng `nix-darwin` (đã được cấu hình `nix.enable = false` để tránh xung đột với trình daemon của Determinate Nix):
+Để thiết lập hệ thống lần đầu (bootstrap), hãy chạy script `bootstrap.sh` và truyền tên người dùng cục bộ của bạn bằng tham số `--user`:
 
 ```bash
-# Di chuyển vào thư mục repo
-cd ~/dotfiles
-
-# Áp dụng cấu hình (nix-darwin + home-manager)
-nix run github:nix-darwin/nix-darwin/master#darwin-rebuild -- switch --flake .#macos
+# Thiết lập hệ thống lần đầu
+./bootstrap.sh --user <tên_user_của_bạn>
 ```
-*Lưu ý:* Lần chạy đầu tiên sẽ yêu cầu mật khẩu sudo để thiết lập các liên kết tượng trưng hệ thống.
 
-### B. Trên Linux
-Sử dụng Home Manager phiên bản độc lập (standalone):
+Script sẽ tự động:
+1. Kiểm tra và cài đặt Determinate Nix nếu chưa có.
+2. Tạo symlink liên kết thư mục hiện tại của repo tới thư mục `~/.dotfiles`.
+3. Tự động cập nhật tên người dùng cục bộ vào `flake.nix`.
+4. Thực hiện việc áp dụng cấu hình Nix ban đầu.
+
+Để cập nhật/xây dựng lại cấu hình sau này (rebuild) khi bạn thay đổi các file trong repo, chạy script `rebuild.sh`:
 
 ```bash
-# Di chuyển vào thư mục repo
-cd ~/dotfiles
-
-# Áp dụng cấu hình Home Manager
-nix run github:nix-community/home-manager -- switch --flake .#linux
+# Xây dựng lại cấu hình
+./rebuild.sh
 ```
 
----
+Cả hai script đều hỗ trợ tham số `--dry-run` để bạn chạy thử nghiệm kiểm tra lệnh trước khi áp dụng thực tế.
 
 ## 4. Cấu trúc thư mục
 
