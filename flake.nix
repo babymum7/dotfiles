@@ -18,34 +18,39 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, nix-darwin, home-manager }: {
-    # 1. macOS configuration (nix-darwin + home-manager)
-    # Target: macOS. Run on Mac (first run uses github:nix-darwin/nix-darwin/master#darwin-rebuild):
-    # nix run github:nix-darwin/nix-darwin/master#darwin-rebuild -- switch --flake .#macos
-    darwinConfigurations."macos" = nix-darwin.lib.darwinSystem {
-      # Change "aarch64-darwin" to "x86_64-darwin" if using an older Intel Mac
-      system = "aarch64-darwin";
-      modules = [
-        ./hosts/macos/configuration.nix
-        home-manager.darwinModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-          # Change "username" to your actual macOS local username
-          home-manager.users.username = import ./home/macos.nix;
-        }
-      ];
-    };
+  outputs = inputs@{ self, nixpkgs, nix-darwin, home-manager }:
+    let
+      user = "username";
+    in {
+      # 1. macOS configuration (nix-darwin + home-manager)
+      # Target: macOS. Run on Mac (first run uses github:nix-darwin/nix-darwin/master#darwin-rebuild):
+      darwinConfigurations."macos" = nix-darwin.lib.darwinSystem {
+        # Change "aarch64-darwin" to "x86_64-darwin" if using an older Intel Mac
+        system = "aarch64-darwin";
+        specialArgs = { inherit user; };
+        modules = [
+          ./hosts/macos/configuration.nix
+          home-manager.darwinModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = { inherit user; };
+            # Change "username" to your actual macOS local username
+            home-manager.users.${user} = import ./home/macos.nix;
+          }
+        ];
+      };
 
-    # 2. Linux configuration (Home Manager standalone)
-    # Target: Linux. Run on Linux:
-    # nix run github:nix-community/home-manager -- switch --flake .#linux
-    homeConfigurations."linux" = home-manager.lib.homeManagerConfiguration {
-      pkgs = nixpkgs.legacyPackages."x86_64-linux";
-      modules = [
-        ./hosts/linux/configuration.nix
-        ./home/linux.nix
-      ];
+      # 2. Linux configuration (Home Manager standalone)
+      # Target: Linux. Run on Linux:
+      # nix run github:nix-community/home-manager -- switch --flake .#linux
+      homeConfigurations."linux" = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages."x86_64-linux";
+        extraSpecialArgs = { inherit user; };
+        modules = [
+          ./hosts/linux/configuration.nix
+          ./home/linux.nix
+        ];
+      };
     };
-  };
 }
