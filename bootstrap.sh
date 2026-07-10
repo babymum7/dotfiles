@@ -60,7 +60,7 @@ if [ "$CURRENT_DIR" != "$DOTFILES_DIR" ]; then
     echo "[Dry Run] Would create symlink: ln -sfn $CURRENT_DIR $DOTFILES_DIR"
   else
     if [ -L "$DOTFILES_DIR" ] || [ -e "$DOTFILES_DIR" ]; then
-      TARGET_PATH=$(readlink -f "$DOTFILES_DIR" || echo "")
+      TARGET_PATH=$(readlink "$DOTFILES_DIR" || echo "")
       if [ "$TARGET_PATH" != "$CURRENT_DIR" ]; then
         echo "Backing up existing $DOTFILES_DIR to ${DOTFILES_DIR}.bak"
         mv "$DOTFILES_DIR" "${DOTFILES_DIR}.bak"
