@@ -51,7 +51,6 @@
         pkgs = nixpkgs.legacyPackages."x86_64-linux";
         extraSpecialArgs = { user = linuxUser; };
         modules = [
-          ./hosts/linux/configuration.nix
           ./home/linux.nix
         ];
       };
