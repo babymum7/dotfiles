@@ -53,7 +53,7 @@ if is_macos then
 	config.macos_window_background_blur = 50 -- native macOS blur
 	config.window_decorations = "RESIZE"
 else
-	config.window_decorations = "RESIZE"
+	config.window_decorations = "TITLE | RESIZE"
 end
 config.window_frame = {
 	font_size = 12,
