@@ -41,9 +41,10 @@ config.bold_brightens_ansi_colors = true
 --  Window
 -- ────────────────────────────────
 config.window_background_opacity = 1.0
+local bg_image = is_macos and "/backgrounds/samurai_dark.jpg" or "/backgrounds/centered_cyber.png"
 config.background = {
 	{
-		source = { File = wezterm.config_dir .. "/backgrounds/centered_cyber.png" },
+		source = { File = wezterm.config_dir .. bg_image },
 		opacity = 0.95,
 		hsb = { brightness = 1, saturation = 1 },
 	},
