@@ -1,8 +1,15 @@
 return {
   {
     'stevearc/oil.nvim',
+    dependencies = {
+      'malewicz1337/oil-git.nvim',
+    },
     opts = { view_options = { show_hidden = true } },
     keys = { { '<leader>e', '<cmd>Oil<cr>', desc = 'File Browser' } },
+    config = function(_, opts)
+      require('oil').setup(opts)
+      require('oil-git').setup()
+    end,
   },
   {
     'folke/snacks.nvim',
