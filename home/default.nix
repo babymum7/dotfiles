@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, user, ... }:
 
 {
   # Common packages for both macOS and Linux
@@ -17,7 +17,7 @@
   programs.git = {
     enable = true;
     settings = {
-      user.name = "babymum7";
+      user.name = user;
       user.email = "nbtrong2312@gmail.com";
       init.defaultBranch = "main";
     };
