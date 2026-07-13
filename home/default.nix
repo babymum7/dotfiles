@@ -1,6 +1,12 @@
 { config, pkgs, user, ... }:
 
 {
+  # Common session PATH for all shells and SSH logins
+  home.sessionPath = [
+    "$HOME/.local/bin"
+    "$HOME/.bun/bin"
+  ];
+
   # Common packages for both macOS and Linux
   home.packages = [
     pkgs.neovim
@@ -47,10 +53,10 @@
         load-env $env_vars
         $env.PATH = ($env.PATH | prepend $"($env_vars.FNM_MULTISHELL_PATH)/bin")
       }
-
-      # Add Bun bin directory to PATH
+      # Add local bin and Bun bin directories to PATH
+      let local_bin = ($env.HOME | path join ".local" "bin")
       let bun_bin = ($env.HOME | path join ".bun" "bin")
-      $env.PATH = ($env.PATH | prepend $bun_bin)
+      $env.PATH = ($env.PATH | prepend $local_bin | prepend $bun_bin)
     '';
     extraConfig = ''
       $env.config.show_banner = false
