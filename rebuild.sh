@@ -90,7 +90,7 @@ if [ "$OS_TYPE" = "Darwin" ]; then
     else
       echo "darwin-rebuild not found in PATH. Falling back to nix run..."
       ensure_nix_command
-      nix run github:nix-darwin/nix-darwin/master#darwin-rebuild -- switch --flake "$FLAKE_URI"
+      nix run github:nix-darwin/nix-darwin/nix-darwin-26.05#darwin-rebuild -- switch --flake "$FLAKE_URI"
     fi
   fi
 else
@@ -104,7 +104,7 @@ else
     else
       echo "home-manager not found in PATH. Falling back to nix run..."
       ensure_nix_command
-      nix run github:nix-community/home-manager -- switch --flake "$FLAKE_URI"
+      nix run github:nix-community/home-manager/release-26.05 -- switch --flake "$FLAKE_URI"
     fi
   fi
 fi
