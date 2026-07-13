@@ -36,15 +36,17 @@
       pull = "git pull";
       m = "git switch main";
     };
-    extraConfig = ''
-      $env.config.show_banner = false
-
+    extraEnv = ''
       # Initialize fnm node version manager
-      if (which fnm | is-not-empty) {
-        let env_vars = (fnm env --json | from json)
+      let fnm_bin = "${pkgs.fnm}/bin/fnm"
+      if ($fnm_bin | path exists) {
+        let env_vars = (^$fnm_bin env --json | from json)
         load-env $env_vars
         $env.PATH = ($env.PATH | prepend $"($env_vars.FNM_MULTISHELL_PATH)/bin")
       }
+    '';
+    extraConfig = ''
+      $env.config.show_banner = false
     '';
   };
 
