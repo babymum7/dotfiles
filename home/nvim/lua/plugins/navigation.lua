@@ -16,6 +16,7 @@ return {
         },
       },
     },
+    cmd = { "Oil" },
     keys = { { '<leader>e', '<cmd>Oil<cr>', desc = 'File Browser' } },
     config = function(_, opts)
       require('oil').setup(opts)
