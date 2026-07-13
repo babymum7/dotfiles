@@ -1,22 +1,6 @@
 { config, pkgs, ... }:
-let
-  bun-1_3_14 = pkgs.bun.overrideAttrs (oldAttrs: rec {
-    version = "1.3.14";
-    src = let
-      sys = pkgs.stdenv.hostPlatform.system;
-      platformConfig = if sys == "x86_64-linux" then {
-        name = "linux-x64";
-        sha256 = "13w4gvgwrjq9bi3ddp53hgm3z399d8i2aqpcmsaqbw2mx2pf47lm";
-      } else if sys == "aarch64-darwin" then {
-        name = "darwin-aarch64";
-        sha256 = "0816cp154xi6x01qh7h0cgvild3jb3lvf2mcqxxgkmlah8hn5ffq";
-      } else throw "Unsupported system for bun overlay: ${sys}";
-    in pkgs.fetchurl {
-      url = "https://github.com/oven-sh/bun/releases/download/bun-v${version}/bun-${platformConfig.name}.zip";
-      sha256 = platformConfig.sha256;
-    };
-  });
-in {
+
+{
   # Common packages for both macOS and Linux
   home.packages = [
     pkgs.neovim
@@ -25,7 +9,7 @@ in {
     pkgs.ripgrep
     pkgs.fd
     pkgs.fzf
-    bun-1_3_14
+    pkgs.bun
     pkgs.fnm
   ];
 
