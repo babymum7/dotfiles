@@ -14,7 +14,7 @@ return {
             split = "belowright",
           },
         },
-        ["gy"] = "actions.copy_entry_path",
+        ["yp"] = "actions.yank_entry",
       },
     },
     cmd = { "Oil" },
