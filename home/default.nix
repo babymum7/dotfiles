@@ -11,6 +11,7 @@
     pkgs.fzf
     pkgs.fnm
     pkgs.stdenv.cc
+    pkgs.tree-sitter
   ];
 
   # Basic Git configuration (adjust to your preference)

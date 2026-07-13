@@ -1,19 +1,29 @@
 return {
   {
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
     build = ':TSUpdate',
-    event = { 'BufReadPost', 'BufNewFile' },
+    lazy = false,
     opts = {
       ensure_installed = { 'markdown', 'markdown_inline' },
     },
     config = function(_, opts)
-      local configs = require('nvim-treesitter.configs')
-      configs.setup(opts)
+      require('nvim-treesitter').setup(opts)
+      if opts.ensure_installed then
+        local res = require('nvim-treesitter').install(opts.ensure_installed)
+        if res and res.wait then
+          res:wait(30000)
+        end
+      end
     end,
   },
   {
+    'echasnovski/mini.icons',
+    opts = {},
+  },
+  {
     'MeanderingProgrammer/render-markdown.nvim',
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' },
     ft = { 'markdown' },
     opts = {},
   },
