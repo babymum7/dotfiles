@@ -71,4 +71,7 @@
 
   home.file.".config/herdr/nvim-explorer.sh".source =
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home/herdr/nvim-explorer.sh";
+
+  home.file.".config/nvim".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home/nvim";
 }
