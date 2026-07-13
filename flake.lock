@@ -58,11 +58,24 @@
         "type": "github"
       }
     },
+    "nixpkgs-bun": {
+      "locked": {
+        "lastModified": 1778688106,
+        "narHash": "sha256-5AflZ/P4D9ZC19WSdUTcs/xVowJETiNTtGvWhPeHCME=",
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nixpkgs/archive/943e4c3c705a1b3025348d82d6aada3c442327ec.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nixpkgs/archive/943e4c3c705a1b3025348d82d6aada3c442327ec.tar.gz"
+      }
+    },
     "root": {
       "inputs": {
         "home-manager": "home-manager",
         "nix-darwin": "nix-darwin",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-bun": "nixpkgs-bun"
       }
     }
   },
