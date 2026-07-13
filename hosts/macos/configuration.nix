@@ -1,9 +1,10 @@
-{ pkgs, ... }: {
+{ pkgs, user, ... }: {
   # List packages installed in system profile for macOS.
   environment.systemPackages = [
     pkgs.vim
     pkgs.git
   ];
+  users.users.${user}.home = "/Users/${user}";
   # Disable nix-darwin's management of the Nix daemon and configuration
   # because it is managed by Determinate Nix.
   nix.enable = false;

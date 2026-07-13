@@ -10,6 +10,7 @@
     pkgs.fd
     pkgs.fzf
     pkgs.fnm
+    pkgs.stdenv.cc
   ];
 
   # Basic Git configuration (adjust to your preference)
