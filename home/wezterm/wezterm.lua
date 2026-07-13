@@ -27,7 +27,7 @@ config.font = wezterm.font_with_fallback({
 	{ family = "JetBrainsMono Nerd Font Mono", weight = "Bold", italic = true },
 	is_macos and "Apple Color Emoji" or "Noto Color Emoji",
 })
-config.font_size = 13
+config.font_size = 12.5
 config.line_height = 1
 
 -- ────────────────────────────────
@@ -51,9 +51,9 @@ config.background = {
 }
 if is_macos then
 	config.macos_window_background_blur = 50 -- native macOS blur
-	config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
+	config.window_decorations = "RESIZE"
 else
-	config.window_decorations = "TITLE|RESIZE"
+	config.window_decorations = "TITLE | RESIZE"
 end
 config.window_frame = {
 	font_size = 12,
@@ -66,7 +66,7 @@ config.window_frame = {
 -- ────────────────────────────────
 config.enable_tab_bar = true
 config.use_fancy_tab_bar = true
-config.hide_tab_bar_if_only_one_tab = false
+config.hide_tab_bar_if_only_one_tab = true
 config.colors = {
 	tab_bar = {
 		-- background = '#1e1e2e',
@@ -123,7 +123,7 @@ table.insert(config.hyperlink_rules, {
 
 -- Helper to dynamically locate the herdr binary
 local herdr_bin = (function()
-	local success, stdout, stderr = wezterm.run_child_process({"sh", "-lc", "command -v herdr"})
+	local success, stdout, stderr = wezterm.run_child_process({ "sh", "-lc", "command -v herdr" })
 	if success and stdout then
 		local path = stdout:gsub("%s+$", "")
 		if path ~= "" then
@@ -203,7 +203,6 @@ wezterm.on("open-uri", function(window, pane, uri)
 			end
 		end
 
-
 		-- Build candidate paths based on CWD
 		local paths_to_check = {}
 		if not full_path:match("^/") then
@@ -214,7 +213,9 @@ wezterm.on("open-uri", function(window, pane, uri)
 				if type(cwd_url) == "string" then
 					wezterm_cwd = cwd_url
 				elseif type(cwd_url) == "userdata" or type(cwd_url) == "table" then
-					local ok, val = pcall(function() return cwd_url.file_path or cwd_url.path end)
+					local ok, val = pcall(function()
+						return cwd_url.file_path or cwd_url.path
+					end)
 					if ok and val then
 						wezterm_cwd = val
 					else
@@ -252,7 +253,9 @@ wezterm.on("open-uri", function(window, pane, uri)
 					local json_str = handle:read("*a")
 					handle:close()
 					if json_str and json_str ~= "" then
-						local ok, data = pcall(function() return wezterm.json_parse(json_str) end)
+						local ok, data = pcall(function()
+							return wezterm.json_parse(json_str)
+						end)
 						if ok and data and data.result and data.result.panes then
 							for _, p in ipairs(data.result.panes) do
 								if p.focused then
@@ -311,7 +314,9 @@ wezterm.on("open-uri", function(window, pane, uri)
 					local json_str = handle:read("*a")
 					handle:close()
 					if json_str and json_str ~= "" then
-						local ok, data = pcall(function() return wezterm.json_parse(json_str) end)
+						local ok, data = pcall(function()
+							return wezterm.json_parse(json_str)
+						end)
 						if ok and data and data.result and data.result.panes then
 							for _, p in ipairs(data.result.panes) do
 								if p.focused then
@@ -341,7 +346,7 @@ wezterm.on("open-uri", function(window, pane, uri)
 						new_pane_id = new_pane_id:gsub("%s+", "") -- strip whitespaces
 						if new_pane_id ~= "" then
 							local nvim_cmd = string.format(
-								'%s pane run %s \'nvim +%s "%s" ; exit\'',
+								"%s pane run %s 'nvim +%s \"%s\" ; exit'",
 								herdr_bin,
 								new_pane_id,
 								line,
@@ -422,7 +427,9 @@ wezterm.on("open-uri", function(window, pane, uri)
 				if type(cwd_url) == "string" then
 					wezterm_cwd = cwd_url
 				elseif type(cwd_url) == "userdata" or type(cwd_url) == "table" then
-					local ok, val = pcall(function() return cwd_url.file_path or cwd_url.path end)
+					local ok, val = pcall(function()
+						return cwd_url.file_path or cwd_url.path
+					end)
 					if ok and val then
 						wezterm_cwd = val
 					else
@@ -489,7 +496,9 @@ wezterm.on("open-uri", function(window, pane, uri)
 					local json_str = handle:read("*a")
 					handle:close()
 					if json_str and json_str ~= "" then
-						local ok, data = pcall(function() return wezterm.json_parse(json_str) end)
+						local ok, data = pcall(function()
+							return wezterm.json_parse(json_str)
+						end)
 						if ok and data and data.result and data.result.panes then
 							for _, p in ipairs(data.result.panes) do
 								if p.focused then
@@ -517,7 +526,7 @@ wezterm.on("open-uri", function(window, pane, uri)
 						new_pane_id = new_pane_id:gsub("%s+", "")
 						if new_pane_id ~= "" then
 							local nvim_cmd = string.format(
-								'%s pane run %s \'nvim +%s "%s" ; exit\'',
+								"%s pane run %s 'nvim +%s \"%s\" ; exit'",
 								herdr_bin,
 								new_pane_id,
 								line,

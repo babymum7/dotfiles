@@ -198,10 +198,37 @@ if [ "$OS_TYPE" = "Linux" ]; then
     echo "Configuring GPU drivers for Nix GUI applications..."
     if [ "$DRY_RUN" = true ]; then
       echo "[Dry Run] Would run: sudo $GPU_SETUP"
+      echo "[Dry Run] Would create and enable systemd service: nix-gpu-setup.service"
     else
       if ! sudo "$GPU_SETUP"; then
         echo "Warning: GPU driver configuration exited with a non-zero status." >&2
       fi
+
+      # Automate systemd service creation to load OpenGL drivers on every boot
+      echo "Creating systemd service to automate GPU setup on boot..."
+      SERVICE_FILE="/etc/systemd/system/nix-gpu-setup.service"
+      TARGET_HOME="/home/$USER_NAME"
+      if [ "$USER_NAME" = "root" ]; then
+        TARGET_HOME="/root"
+      fi
+
+      sudo tee "$SERVICE_FILE" >/dev/null <<EOF
+[Unit]
+Description=Nix GUI GPU Driver Setup on Boot
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=${TARGET_HOME}/.nix-profile/bin/dotfiles-gpu-setup
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+      sudo systemctl daemon-reload
+      sudo systemctl enable nix-gpu-setup.service
+      echo "Successfully enabled nix-gpu-setup.service to run automatically at boot."
     fi
   fi
 fi
