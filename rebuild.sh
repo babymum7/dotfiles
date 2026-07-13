@@ -46,6 +46,12 @@ if [ "$DRY_RUN" = false ]; then
   source_nix
 fi
 
+
+# Resolve flake directory path
+DOTFILES_DIR="$HOME/.dotfiles"
+CURRENT_DIR=$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+
 ensure_nix_command() {
   if ! command -v nix &> /dev/null; then
     echo "Error: Nix is not installed or not found in PATH." >&2
@@ -53,10 +59,6 @@ ensure_nix_command() {
     exit 1
   fi
 }
-
-# Resolve flake directory path
-DOTFILES_DIR="$HOME/.dotfiles"
-CURRENT_DIR=$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 # Check if ~/.dotfiles points to CURRENT_DIR
 IS_LINKED=false
@@ -90,7 +92,7 @@ if [ "$OS_TYPE" = "Darwin" ]; then
     else
       echo "darwin-rebuild not found in PATH. Falling back to nix run..."
       ensure_nix_command
-      nix run github:nix-darwin/nix-darwin/nix-darwin-26.05#darwin-rebuild -- switch --flake "$FLAKE_URI"
+      nix run https://github.com/nix-darwin/nix-darwin/archive/nix-darwin-26.05.tar.gz#darwin-rebuild -- switch --flake "$FLAKE_URI"
     fi
   fi
 else
@@ -104,7 +106,7 @@ else
     else
       echo "home-manager not found in PATH. Falling back to nix run..."
       ensure_nix_command
-      nix run github:nix-community/home-manager/release-26.05 -- switch --flake "$FLAKE_URI"
+      nix run https://github.com/nix-community/home-manager/archive/release-26.05.tar.gz -- switch --flake "$FLAKE_URI" -b backup
     fi
   fi
 fi

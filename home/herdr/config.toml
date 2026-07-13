@@ -1,0 +1,28 @@
+onboarding = false
+[ui.toast]
+delivery = "terminal"
+
+[theme]
+name = "catppuccin"
+auto_switch = false
+
+[ui.sound]
+enabled = true
+
+[ui]
+show_agent_labels_on_pane_borders = true
+
+[keys]
+prefix = "ctrl+space"
+[[keys.command]]              # open nvim explorer in a vertical split
+key = "prefix+f"
+type = "shell"
+command = "~/.config/herdr/nvim-explorer.sh"
+
+[[keys.command]]              # open new tab with nvim .
+key = "prefix+shift+f"
+type = "shell"
+command = "~/.config/herdr/nvim-newtab.sh"
+
+[experimental]
+cjk_ime_cursor_shape = "block"

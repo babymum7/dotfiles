@@ -1,5 +1,5 @@
 {
-  description = "Portable Nix configuration for macOS and Linux";
+  description = "Nix configuration for macOS and Linux";
 
   inputs = {
     # Unstable packages are recommended for desktop environments and developers
@@ -17,28 +17,28 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-
   outputs = inputs@{ self, nixpkgs, nix-darwin, home-manager }:
     let
       # Centralized local username configuration.
       # Sửa tên user ở đây hoặc chạy ./bootstrap.sh --user <tên_user>
-      user = "babymum7";
+      macUser = "babymum7";
+      linuxUser = "trong";
     in {
       # 1. macOS configuration (nix-darwin + home-manager)
       # Target: macOS. Run on Mac (first run uses github:nix-darwin/nix-darwin/master#darwin-rebuild):
       darwinConfigurations."macos" = nix-darwin.lib.darwinSystem {
         # Change "aarch64-darwin" to "x86_64-darwin" if using an older Intel Mac
         system = "aarch64-darwin";
-        specialArgs = { inherit user; };
+        specialArgs = { user = macUser; };
         modules = [
           ./hosts/macos/configuration.nix
           home-manager.darwinModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = { inherit user; };
-            # Dynamically imported using the centralized 'user' variable above
-            home-manager.users.${user} = import ./home/macos.nix;
+            home-manager.extraSpecialArgs = { user = macUser; };
+            # Dynamically imported using the centralized 'macUser' variable above
+            home-manager.users.${macUser} = import ./home/macos.nix;
           }
         ];
       };
@@ -48,11 +48,12 @@
       # nix run github:nix-community/home-manager -- switch --flake .#linux
       homeConfigurations."linux" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages."x86_64-linux";
-        extraSpecialArgs = { inherit user; };
+        extraSpecialArgs = { user = linuxUser; };
         modules = [
           ./hosts/linux/configuration.nix
           ./home/linux.nix
         ];
       };
+
     };
 }

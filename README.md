@@ -1,4 +1,4 @@
-# Portable Nix Configuration (macOS & Linux)
+# Nix Configuration (macOS & Linux)
 
 Kho lưu trữ cấu hình dotfiles bằng Nix Flakes kết hợp với **nix-darwin** (cho macOS ở nhà) và **Home Manager** (cho cả macOS và Linux ở công ty). Hệ thống được cấu hình tối ưu để sử dụng cùng với **Determinate Nix Installer**.
 
@@ -34,9 +34,9 @@ Nếu muốn gỡ cài đặt sạch sẽ Determinate Nix, hãy chạy lệnh sa
 
 ## 2. Chuẩn bị cấu hình trước khi chạy
 
-Trước khi chạy, script `bootstrap.sh` sẽ tự động cập nhật tên người dùng cục bộ (local username) vào biến `user` trung tâm trong `flake.nix` và tự động kế thừa vào cấu hình Home Manager.
+Trước khi chạy, script `bootstrap.sh` sẽ tự động cập nhật tên người dùng cục bộ (local username) vào biến tương ứng (`macUser` hoặc `linuxUser`) trong `flake.nix` tùy thuộc vào hệ điều hành đang dùng.
 
-Nếu muốn chạy thủ công, bạn chỉ cần sửa biến `user` ở đầu file `flake.nix`.
+Nếu muốn cấu hình thủ công, bạn chỉ cần sửa các biến này ở đầu file `flake.nix`.
 ---
 
 ## 3. Áp dụng cấu hình (Apply)
@@ -78,3 +78,17 @@ Cả hai script đều hỗ trợ tham số `--dry-run` để bạn chạy thử
     └── linux/
         └── configuration.nix  # Cấu hình mức máy trạm (host-level) cho Linux
 ```
+
+---
+
+## 5. Lưu ý cấu hình GPU cho ứng dụng GUI (như WezTerm) trên generic Linux
+
+Trên các bản phân phối Linux không phải NixOS (như Ubuntu, Debian, Fedora), các ứng dụng đồ họa GUI được quản lý bởi Nix (ví dụ: WezTerm) cần truy cập driver GPU của hệ thống host để có hiệu năng tối ưu và tránh lỗi crash khi khởi chạy.
+
+Bạn có thể tự động cấu hình tích hợp driver đồ họa của host vào Nix bằng cách chạy lệnh sau:
+
+```bash
+sudo dotfiles-gpu-setup
+```
+
+Lệnh này sẽ tự động phát hiện driver GPU của host và tạo các liên kết driver cần thiết trong Nix store để ứng dụng đồ họa hoạt động mượt mà.

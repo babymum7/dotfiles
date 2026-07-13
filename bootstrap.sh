@@ -45,6 +45,9 @@ if [ "$OS_TYPE" != "Darwin" ] && [ "$OS_TYPE" != "Linux" ]; then
   exit 1
 fi
 
+CURRENT_DIR=$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+
 echo "=== Nix Dotfiles Bootstrap ==="
 echo "Target User: $USER_NAME"
 if [ "$DRY_RUN" = true ]; then
@@ -78,6 +81,11 @@ if ! command -v nix &> /dev/null; then
   if [ "$DRY_RUN" = true ]; then
     echo "[Dry Run] Would run: curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install"
   else
+    if ! command -v curl &> /dev/null; then
+      echo "Error: 'curl' is required to install Nix but was not found on the host system." >&2
+      echo "Please install 'curl' using your system package manager first (e.g., apt install curl / dnf install curl)." >&2
+      exit 1
+    fi
     curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
     source_nix
     if ! command -v nix &> /dev/null; then
@@ -90,7 +98,7 @@ else
 fi
 # 2. Symlink current directory to ~/.dotfiles
 DOTFILES_DIR="$HOME/.dotfiles"
-CURRENT_DIR=$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
 
 # Prevent nested directory loop/relocation error
 DOTFILES_PHYSICAL=$(cd -P "$DOTFILES_DIR" &>/dev/null && pwd || echo "")
@@ -148,10 +156,18 @@ if [ -f "$FLAKE_PATH" ]; then
     echo "[Dry Run] Would update user variable in $FLAKE_PATH"
   else
     SAFE_USER=$(printf '%s\n' "$USER_NAME" | sed 's/\\/\\\\/g; s/\//\\\//g; s/\&/\\\&/g')
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-      sed -i '' -E 's/user = "[^"]*";/user = "'"$SAFE_USER"'";/' "$FLAKE_PATH"
+    if [ "$OS_TYPE" = "Darwin" ]; then
+      if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' -E 's/macUser = "[^"]*";/macUser = "'"$SAFE_USER"'";/' "$FLAKE_PATH"
+      else
+        sed -i -E 's/macUser = "[^"]*";/macUser = "'"$SAFE_USER"'";/' "$FLAKE_PATH"
+      fi
     else
-      sed -i -E 's/user = "[^"]*";/user = "'"$SAFE_USER"'";/' "$FLAKE_PATH"
+      if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' -E 's/linuxUser = "[^"]*";/linuxUser = "'"$SAFE_USER"'";/' "$FLAKE_PATH"
+      else
+        sed -i -E 's/linuxUser = "[^"]*";/linuxUser = "'"$SAFE_USER"'";/' "$FLAKE_PATH"
+      fi
     fi
   fi
 else
@@ -160,10 +176,10 @@ fi
 # 4. Run initial Nix switch based on OS
 if [ "$OS_TYPE" = "Darwin" ]; then
   echo "Detected macOS."
-  cmd=(nix run github:nix-darwin/nix-darwin/master#darwin-rebuild -- switch --flake "$DOTFILES_DIR#macos")
+  cmd=(nix run https://github.com/nix-darwin/nix-darwin/archive/nix-darwin-26.05.tar.gz#darwin-rebuild -- switch --flake "$DOTFILES_DIR#macos")
 else
   echo "Detected Linux."
-  cmd=(nix run github:nix-community/home-manager -- switch --flake "$DOTFILES_DIR#linux")
+  cmd=(nix run https://github.com/nix-community/home-manager/archive/release-26.05.tar.gz -- switch --flake "$DOTFILES_DIR#linux" -b backup)
 fi
 
 echo "Running initial configuration switch..."
@@ -174,3 +190,36 @@ if [ "$DRY_RUN" = true ]; then
 else
   "${cmd[@]}"
 fi
+
+# 5. Configure GPU drivers for Nix GUI applications on generic Linux
+if [ "$OS_TYPE" = "Linux" ]; then
+  GPU_SETUP=$(command -v dotfiles-gpu-setup || echo "$HOME/.nix-profile/bin/dotfiles-gpu-setup")
+  if command -v dotfiles-gpu-setup &>/dev/null || [ -x "$GPU_SETUP" ]; then
+    echo "Configuring GPU drivers for Nix GUI applications..."
+    if [ "$DRY_RUN" = true ]; then
+      echo "[Dry Run] Would run: sudo $GPU_SETUP"
+    else
+      if ! sudo "$GPU_SETUP"; then
+        echo "Warning: GPU driver configuration exited with a non-zero status." >&2
+      fi
+    fi
+  fi
+fi
+
+# 6. Install herdr on Linux if not present
+if [ "$OS_TYPE" = "Linux" ]; then
+  if ! command -v herdr &>/dev/null; then
+    echo "herdr not found. Installing herdr via the official installer..."
+    if [ "$DRY_RUN" = true ]; then
+      echo "[Dry Run] Would run: curl -fsSL https://herdr.dev/install.sh | sh"
+    else
+      if ! curl -fsSL https://herdr.dev/install.sh | sh; then
+        echo "Warning: Failed to install herdr via the official installer." >&2
+      fi
+    fi
+  else
+    echo "herdr is already installed. You can update it by running: herdr update"
+  fi
+fi
+
+
