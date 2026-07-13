@@ -46,6 +46,10 @@
         load-env $env_vars
         $env.PATH = ($env.PATH | prepend $"($env_vars.FNM_MULTISHELL_PATH)/bin")
       }
+
+      # Add Bun bin directory to PATH
+      let bun_bin = ($env.HOME | path join ".bun" "bin")
+      $env.PATH = ($env.PATH | prepend $bun_bin)
     '';
     extraConfig = ''
       $env.config.show_banner = false
