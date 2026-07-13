@@ -1,4 +1,4 @@
-{ config, pkgs, user, ... }: {
+{ user, ... }: {
   imports = [ ./default.nix ];
 
   home.username = user;
@@ -8,7 +8,4 @@
   home.stateVersion = "24.11";
 
   targets.genericLinux.enable = true;
-
-  # Linux-specific configurations
-  home.packages = [];
 }
