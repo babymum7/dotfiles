@@ -7,6 +7,8 @@
     ripgrep
     fd
     fzf
+    bun
+    fnm
   ];
 
   # Basic Git configuration (adjust to your preference)
@@ -36,6 +38,13 @@
     };
     extraConfig = ''
       $env.config.show_banner = false
+
+      # Initialize fnm node version manager
+      if (which fnm | is-not-empty) {
+        let env_vars = (fnm env --json | from json)
+        load-env $env_vars
+        $env.PATH = ($env.PATH | prepend $"($env_vars.FNM_MULTISHELL_PATH)/bin")
+      }
     '';
   };
 
