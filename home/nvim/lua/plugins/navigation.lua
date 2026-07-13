@@ -4,7 +4,18 @@ return {
     dependencies = {
       'malewicz1337/oil-git.nvim',
     },
-    opts = { view_options = { show_hidden = true } },
+    opts = {
+      view_options = { show_hidden = true },
+      keymaps = {
+        ["<C-p>"] = {
+          "actions.preview",
+          opts = {
+            vertical = true,
+            split = "belowright",
+          },
+        },
+      },
+    },
     keys = { { '<leader>e', '<cmd>Oil<cr>', desc = 'File Browser' } },
     config = function(_, opts)
       require('oil').setup(opts)
