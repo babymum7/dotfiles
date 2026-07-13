@@ -206,14 +206,24 @@ if [ "$OS_TYPE" = "Linux" ]; then
       echo "Legacy nix-gpu-setup.service removed."
     fi
   fi
-  if ! command -v wezterm &>/dev/null; then
+  # Check if wezterm-nightly package is installed on Debian/Ubuntu, or wezterm binary exists on other platforms
+  IS_NIGHTLY_INSTALLED=false
+  if command -v apt-get &>/dev/null && command -v dpkg &>/dev/null; then
+    if dpkg -s wezterm-nightly &>/dev/null; then
+      IS_NIGHTLY_INSTALLED=true
+    fi
+  elif command -v wezterm &>/dev/null; then
+    IS_NIGHTLY_INSTALLED=true
+  fi
+
+  if [ "$IS_NIGHTLY_INSTALLED" = false ]; then
     if ! command -v apt-get &>/dev/null || ! command -v gpg &>/dev/null; then
       echo "Warning: 'apt-get' or 'gpg' not found. Skipping automatic native WezTerm installation." >&2
       echo "Please install WezTerm manually for your Linux distribution (see: https://wezfurlong.org/wezterm/install/)." >&2
     else
-      echo "wezterm not found. Installing WezTerm via the official APT repository..."
+      echo "wezterm-nightly not found. Installing WezTerm Nightly via the official APT repository..."
       if [ "$DRY_RUN" = true ]; then
-        echo "[Dry Run] Would import WezTerm GPG key, add APT repository, and run apt install wezterm"
+        echo "[Dry Run] Would import WezTerm GPG key, add APT repository, and run apt install wezterm-nightly"
       else
         if ! command -v curl &>/dev/null; then
           echo "Error: 'curl' is required to fetch WezTerm GPG key but was not found." >&2
@@ -222,13 +232,13 @@ if [ "$OS_TYPE" = "Linux" ]; then
         echo "Adding WezTerm GPG key and APT repository..."
         curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
         echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list >/dev/null
-        echo "Updating APT package cache and installing wezterm..."
+        echo "Updating APT package cache and installing wezterm-nightly..."
         sudo apt-get update
-        sudo apt-get install -y wezterm
+        sudo apt-get install -y wezterm-nightly
       fi
     fi
   else
-    echo "WezTerm is already installed."
+    echo "WezTerm Nightly is already installed."
   fi
 fi
 
