@@ -3,17 +3,17 @@
 
   inputs = {
     # Unstable packages are recommended for desktop environments and developers
-    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-26.05-darwin";
 
     # Controls system-level configuration on macOS
     nix-darwin = {
-      url = "github:LnL7/nix-darwin";
+      url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Manages user-level packages and dotfiles on both macOS and Linux
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -22,7 +22,7 @@
     let
       # Centralized local username configuration.
       # Sửa tên user ở đây hoặc chạy ./bootstrap.sh --user <tên_user>
-      user = "username";
+      user = "babymum7";
     in {
       # 1. macOS configuration (nix-darwin + home-manager)
       # Target: macOS. Run on Mac (first run uses github:nix-darwin/nix-darwin/master#darwin-rebuild):
