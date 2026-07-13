@@ -15,6 +15,12 @@ return {
           },
         },
         ["yp"] = "actions.yank_entry",
+        ["ga"] = {
+          callback = function()
+            require('herdr_helper').add_oil_file_to_agent()
+          end,
+          desc = "Add file path to herdr agent",
+        },
       },
     },
     cmd = { "Oil" },

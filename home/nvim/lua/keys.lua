@@ -4,3 +4,8 @@ vim.keymap.set('n', '<Esc>', ':w<CR>', { desc = 'Save' })
 vim.keymap.set('n', '<C-a>', 'ggVG', { desc = 'Select All' })
 -- pasting over a selection no longer clobbers your clipboard
 vim.cmd([[ xnoremap <expr> p 'pgv"'.v:register.'y' ]])
+
+-- add visual selection to herdr agent
+vim.keymap.set('x', '<leader>a', function()
+  require('herdr_helper').add_visual_selection_to_agent()
+end, { desc = 'Add visual selection to herdr agent' })
