@@ -4,65 +4,44 @@ Kho lưu trữ cấu hình dotfiles bằng Nix Flakes kết hợp với **nix-da
 
 ---
 
-## 1. Cài đặt Determinate Nix (Cho cả macOS và Linux)
+## 1. Thiết lập tự động hệ thống (Bootstrap)
 
-Khuyến khích sử dụng trình cài đặt của Determinate Systems để có cấu hình Nix Flakes sẵn dùng, hoạt động ổn định và sống sót sau các bản cập nhật macOS lớn.
-
-### Lệnh cài đặt:
-```bash
-curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install
-```
-
-### Tắt Telemetry & Sentry (Tùy chọn):
-Nếu bạn không muốn gửi dữ liệu chẩn đoán ẩn danh về máy chủ của Determinate:
-1. Trước khi chạy trình cài đặt, hãy thiết lập biến môi trường:
-   ```bash
-   export DETSYS_IDS_TELEMETRY=disabled
-   ```
-2. Để tắt dịch vụ báo cáo lỗi Sentry, bạn có thể thiết lập:
-   ```bash
-   export NIX_SENTRY_ENDPOINT=""
-   ```
-
-### Gỡ cài đặt hoàn toàn:
-Nếu muốn gỡ cài đặt sạch sẽ Determinate Nix, hãy chạy lệnh sau:
-```bash
-/nix/nix-installer uninstall
-```
-
----
-
-## 2. Chuẩn bị cấu hình trước khi chạy
-
-Trước khi chạy, script `bootstrap.sh` sẽ tự động cập nhật tên người dùng cục bộ (local username) vào biến tương ứng (`macUser` hoặc `linuxUser`) trong `flake.nix` tùy thuộc vào hệ điều hành đang dùng.
-
-Nếu muốn cấu hình thủ công, bạn chỉ cần sửa các biến này ở đầu file `flake.nix`.
----
-
-## 3. Áp dụng cấu hình (Apply)
-
-Để thiết lập hệ thống lần đầu (bootstrap), hãy chạy script `bootstrap.sh` và truyền tên người dùng cục bộ của bạn bằng tham số `--user`:
+Để cài đặt và thiết lập hệ thống lần đầu trên máy mới, bạn chỉ cần chạy duy nhất script `bootstrap.sh`:
 
 ```bash
-# Thiết lập hệ thống lần đầu
 ./bootstrap.sh --user <tên_user_của_bạn>
 ```
+*(Nếu không truyền tham số `--user`, script sẽ tự động lấy username của tài khoản hiện tại).*
 
-Script sẽ tự động:
-1. Kiểm tra và cài đặt Determinate Nix nếu chưa có.
-2. Tạo symlink liên kết thư mục hiện tại của repo tới thư mục `~/.dotfiles`.
-3. Tự động cập nhật tên người dùng cục bộ vào `flake.nix`.
-4. Thực hiện việc áp dụng cấu hình Nix ban đầu.
+### Quy trình tự động của Script:
+1. **Kiểm tra & Cài đặt Nix Native**: Nếu máy chưa cài Nix, script sẽ tự động tải và cài đặt Determinate Nix (yêu cầu mật khẩu `sudo`).
+2. **Tạo liên kết symlink**: Tạo liên kết động từ thư mục chứa repo này tới thư mục `~/.dotfiles`.
+3. **Cập nhật Username**: Cập nhật tên người dùng cục bộ của bạn vào `flake.nix` (biến `macUser` hoặc `linuxUser`).
+4. **Áp dụng cấu hình Nix**: Kích hoạt cấu hình Nix/Home-Manager ban đầu (sử dụng cache/tarball trực tiếp để tránh lỗi GitHub API rate limit 403).
+5. **Cài đặt WezTerm Nightly (Linux/Debian/Ubuntu)**: Tự động cấu hình GPG key, thêm kho APT chính thức và cài đặt `wezterm-nightly`. Nếu máy đang chạy bản Stable, APT sẽ tự động nâng cấp đè lên.
+6. **Cài đặt Herdr (Linux)**: Kiểm tra và tự động cài đặt `herdr` thông qua kịch bản installer từ nhà phát triển (vào `~/.local/bin/herdr`).
 
-Để cập nhật/xây dựng lại cấu hình sau này (rebuild) khi bạn thay đổi các file trong repo, chạy script `rebuild.sh`:
+---
+
+## 2. Cập nhật cấu hình (Rebuild)
+
+Khi bạn thay đổi cấu hình trong các file của thư mục repo cục bộ, hãy chạy script `rebuild.sh` để áp dụng:
 
 ```bash
-# Xây dựng lại cấu hình
 ./rebuild.sh
 ```
 
-Cả hai script đều hỗ trợ tham số `--dry-run` để bạn chạy thử nghiệm kiểm tra lệnh trước khi áp dụng thực tế.
+*   **Trên Linux**: Script sẽ chạy lệnh cập nhật `home-manager`.
+*   **Trên macOS**: Script sẽ chạy lệnh cập nhật `darwin-rebuild`.
+*   Cả hai script đều hỗ trợ tham số `--dry-run` để bạn chạy thử nghiệm kiểm tra lệnh trước khi áp dụng thực tế.
 
+---
+
+## 3. Cập nhật và bảo trì các gói phần mềm
+
+*   **Các gói do Nix quản lý**: Chạy `nix flake update` để cập nhật file lock, sau đó chạy `./rebuild.sh` để áp dụng.
+*   **WezTerm (Linux)**: Cập nhật thông qua trình quản lý gói hệ điều hành: `sudo apt update && sudo apt upgrade wezterm-nightly`.
+*   **Herdr (Linux)**: Cập nhật trực tiếp bằng lệnh tích hợp của ứng dụng: `herdr update`.
 ## 4. Cấu trúc thư mục
 
 ```text
