@@ -78,17 +78,3 @@ Cả hai script đều hỗ trợ tham số `--dry-run` để bạn chạy thử
     └── linux/
         └── configuration.nix  # Cấu hình mức máy trạm (host-level) cho Linux
 ```
-
----
-
-## 5. Lưu ý cấu hình GPU cho ứng dụng GUI (như WezTerm) trên generic Linux
-
-Trên các bản phân phối Linux không phải NixOS (như Ubuntu, Debian, Fedora), các ứng dụng đồ họa GUI được quản lý bởi Nix (ví dụ: WezTerm) cần truy cập driver GPU của hệ thống host để có hiệu năng tối ưu và tránh lỗi crash khi khởi chạy.
-
-Bạn có thể tự động cấu hình tích hợp driver đồ họa của host vào Nix bằng cách chạy lệnh sau:
-
-```bash
-sudo dotfiles-gpu-setup
-```
-
-Lệnh này sẽ tự động phát hiện driver GPU của host và tạo các liên kết driver cần thiết trong Nix store để ứng dụng đồ họa hoạt động mượt mà.

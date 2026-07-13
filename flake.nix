@@ -25,7 +25,8 @@
       linuxUser = "trong";
     in {
       # 1. macOS configuration (nix-darwin + home-manager)
-      # Target: macOS. Run on Mac (first run uses github:nix-darwin/nix-darwin/master#darwin-rebuild):
+      # Target: macOS. Run on Mac (first run uses nix-darwin tarball archive):
+      # nix run https://github.com/nix-darwin/nix-darwin/archive/nix-darwin-26.05.tar.gz#darwin-rebuild -- switch --flake .#macos
       darwinConfigurations."macos" = nix-darwin.lib.darwinSystem {
         # Change "aarch64-darwin" to "x86_64-darwin" if using an older Intel Mac
         system = "aarch64-darwin";
@@ -45,7 +46,7 @@
 
       # 2. Linux configuration (Home Manager standalone)
       # Target: Linux. Run on Linux:
-      # nix run github:nix-community/home-manager -- switch --flake .#linux
+      # nix run https://github.com/nix-community/home-manager/archive/release-26.05.tar.gz -- switch --flake .#linux
       homeConfigurations."linux" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages."x86_64-linux";
         extraSpecialArgs = { user = linuxUser; };
