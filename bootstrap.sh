@@ -191,45 +191,39 @@ else
   "${cmd[@]}"
 fi
 
-# 5. Configure GPU drivers for Nix GUI applications on generic Linux
+# 5. Install WezTerm via APT if on Linux and missing
 if [ "$OS_TYPE" = "Linux" ]; then
-  GPU_SETUP=$(command -v dotfiles-gpu-setup || echo "$HOME/.nix-profile/bin/dotfiles-gpu-setup")
-  if command -v dotfiles-gpu-setup &>/dev/null || [ -x "$GPU_SETUP" ]; then
-    echo "Configuring GPU drivers for Nix GUI applications..."
+  # Clean up legacy systemd GPU setup service if present
+  SERVICE_FILE="/etc/systemd/system/nix-gpu-setup.service"
+  if [ -f "$SERVICE_FILE" ]; then
+    echo "Cleaning up legacy nix-gpu-setup.service..."
     if [ "$DRY_RUN" = true ]; then
-      echo "[Dry Run] Would run: sudo $GPU_SETUP"
-      echo "[Dry Run] Would create and enable systemd service: nix-gpu-setup.service"
+      echo "[Dry Run] Would disable and remove: $SERVICE_FILE"
     else
-      if ! sudo "$GPU_SETUP"; then
-        echo "Warning: GPU driver configuration exited with a non-zero status." >&2
-      fi
-
-      # Automate systemd service creation to load OpenGL drivers on every boot
-      echo "Creating systemd service to automate GPU setup on boot..."
-      SERVICE_FILE="/etc/systemd/system/nix-gpu-setup.service"
-      TARGET_HOME="/home/$USER_NAME"
-      if [ "$USER_NAME" = "root" ]; then
-        TARGET_HOME="/root"
-      fi
-
-      sudo tee "$SERVICE_FILE" >/dev/null <<EOF
-[Unit]
-Description=Nix GUI GPU Driver Setup on Boot
-After=multi-user.target
-
-[Service]
-Type=oneshot
-ExecStart=${TARGET_HOME}/.nix-profile/bin/dotfiles-gpu-setup
-RemainAfterExit=yes
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
+      sudo systemctl disable --now nix-gpu-setup.service &>/dev/null || true
+      sudo rm -f "$SERVICE_FILE"
       sudo systemctl daemon-reload
-      sudo systemctl enable nix-gpu-setup.service
-      echo "Successfully enabled nix-gpu-setup.service to run automatically at boot."
+      echo "Legacy nix-gpu-setup.service removed."
     fi
+  fi
+  if ! command -v wezterm &>/dev/null; then
+    echo "wezterm not found. Installing WezTerm via the official APT repository..."
+    if [ "$DRY_RUN" = true ]; then
+      echo "[Dry Run] Would import WezTerm GPG key, add APT repository, and run apt install wezterm"
+    else
+      if ! command -v curl &>/dev/null; then
+        echo "Error: 'curl' is required to fetch WezTerm GPG key but was not found." >&2
+        exit 1
+      fi
+      echo "Adding WezTerm GPG key and APT repository..."
+      curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+      echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list >/dev/null
+      echo "Updating APT package cache and installing wezterm..."
+      sudo apt update
+      sudo apt install -y wezterm
+    fi
+  else
+    echo "WezTerm is already installed."
   fi
 fi
 
