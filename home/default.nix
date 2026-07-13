@@ -9,7 +9,6 @@
     pkgs.ripgrep
     pkgs.fd
     pkgs.fzf
-    pkgs.bun
     pkgs.fnm
   ];
 

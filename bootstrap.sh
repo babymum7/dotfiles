@@ -258,4 +258,19 @@ if [ "$OS_TYPE" = "Linux" ]; then
   fi
 fi
 
+# 7. Install Bun if not present
+if [ ! -x "$HOME/.bun/bin/bun" ]; then
+  echo "Bun not found. Installing Bun via the official installer..."
+  if [ "$DRY_RUN" = true ]; then
+    echo "[Dry Run] Would run: curl -fsSL https://bun.sh/install | bash"
+  else
+    if ! curl -fsSL https://bun.sh/install | bash; then
+      echo "Warning: Failed to install Bun via the official installer." >&2
+    fi
+  fi
+else
+  BUN_VER=$("$HOME/.bun/bin/bun" --version 2>/dev/null || echo "unknown")
+  echo "Bun is already installed (version: $BUN_VER). You can upgrade it by running: bun upgrade"
+fi
+
 
