@@ -90,4 +90,7 @@
 
   home.file.".config/nvim".source =
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home/nvim";
+  home.file.".omp/agent/config.yml".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home/omp/agent/config.yml";
+
 }

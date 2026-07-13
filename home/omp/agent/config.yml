@@ -1,0 +1,76 @@
+symbolPreset: nerd
+theme: 
+  dark: dark-catppuccin
+  light: light-catppuccin
+setupVersion: 1
+modelRoles: 
+  default: google-antigravity/gemini-3.5-flash:high
+  slow: openai-codex/gpt-5.6-sol:xhigh
+  smol: google-antigravity/gemini-3.5-flash:high
+  vision: openai-codex/gpt-5.5:high
+  plan: openai-codex/gpt-5.6-sol:xhigh
+  designer: zai/glm-5.2:xhigh
+  commit: openai-codex/gpt-5.4-mini:high
+  tiny: openai-codex/gpt-5.4-nano:high
+  task: google-antigravity/gemini-3.5-flash:high
+  advisor: openai-codex/gpt-5.5:high
+compaction: 
+  thresholdTokens: 200000
+  strategy: context-full
+disabledProviders: 
+  - claude
+  - amazon-bedrock
+  - claude-plugins
+defaultThinkingLevel: auto
+statusLine: 
+  transparent: true
+  leftSegments: 
+    - model
+    - mode
+    - path
+    - git
+    - context_pct
+  rightSegments: 
+    - session_name
+  separator: block
+  segmentOptions: 
+    model: 
+      showThinkingLevel: true
+  compactThinkingLevel: true
+  preset: custom
+display: 
+  shimmer: kitt
+  showTokenUsage: true
+  cacheMissMarker: true
+task: 
+  showResolvedModelBadge: true
+  agentModelOverrides: 
+    scout: "3.5"
+    sonic: "3.5"
+includeModelInPrompt: false
+commands: 
+  enableClaudeUser: false
+  enableClaudeProject: false
+  enableOpencodeUser: false
+  enableOpencodeProject: false
+terminal: 
+  showProgress: true
+tui: 
+  textSizing: true
+advisor: 
+  enabled: true
+providers: 
+  image: openai
+stt: 
+  enabled: false
+retry: 
+  fallbackChains: 
+    advisor: 
+      - anthropic/claude-opus-4-8
+    designer: 
+      - xai-oauth/grok-4.5
+      - openai-codex/gpt-5.6-sol
+    slow: 
+      - xai-oauth/grok-4.5
+    plan: 
+      - anthropic/claude-opus-4-8
