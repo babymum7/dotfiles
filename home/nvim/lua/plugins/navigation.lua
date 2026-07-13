@@ -14,6 +14,7 @@ return {
             split = "belowright",
           },
         },
+        ["gy"] = "actions.copy_entry_path",
       },
     },
     cmd = { "Oil" },
