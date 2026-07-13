@@ -207,20 +207,25 @@ if [ "$OS_TYPE" = "Linux" ]; then
     fi
   fi
   if ! command -v wezterm &>/dev/null; then
-    echo "wezterm not found. Installing WezTerm via the official APT repository..."
-    if [ "$DRY_RUN" = true ]; then
-      echo "[Dry Run] Would import WezTerm GPG key, add APT repository, and run apt install wezterm"
+    if ! command -v apt-get &>/dev/null || ! command -v gpg &>/dev/null; then
+      echo "Warning: 'apt-get' or 'gpg' not found. Skipping automatic native WezTerm installation." >&2
+      echo "Please install WezTerm manually for your Linux distribution (see: https://wezfurlong.org/wezterm/install/)." >&2
     else
-      if ! command -v curl &>/dev/null; then
-        echo "Error: 'curl' is required to fetch WezTerm GPG key but was not found." >&2
-        exit 1
+      echo "wezterm not found. Installing WezTerm via the official APT repository..."
+      if [ "$DRY_RUN" = true ]; then
+        echo "[Dry Run] Would import WezTerm GPG key, add APT repository, and run apt install wezterm"
+      else
+        if ! command -v curl &>/dev/null; then
+          echo "Error: 'curl' is required to fetch WezTerm GPG key but was not found." >&2
+          exit 1
+        fi
+        echo "Adding WezTerm GPG key and APT repository..."
+        curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
+        echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list >/dev/null
+        echo "Updating APT package cache and installing wezterm..."
+        sudo apt-get update
+        sudo apt-get install -y wezterm
       fi
-      echo "Adding WezTerm GPG key and APT repository..."
-      curl -fsSL https://apt.fury.io/wez/gpg.key | sudo gpg --yes --dearmor -o /usr/share/keyrings/wezterm-fury.gpg
-      echo 'deb [signed-by=/usr/share/keyrings/wezterm-fury.gpg] https://apt.fury.io/wez/ * *' | sudo tee /etc/apt/sources.list.d/wezterm.list >/dev/null
-      echo "Updating APT package cache and installing wezterm..."
-      sudo apt update
-      sudo apt install -y wezterm
     fi
   else
     echo "WezTerm is already installed."
