@@ -11,7 +11,7 @@ fi
 
 # Split current pane and get the new pane ID
 SPLIT_CWD="${HERDR_ACTIVE_PANE_CWD:-$HOME}"
-NEW_PANE_JSON=$($HERDR_BIN pane split ${HERDR_ACTIVE_PANE_ID:+--pane "$HERDR_ACTIVE_PANE_ID"} --direction right --cwd "$SPLIT_CWD")
+NEW_PANE_JSON=$($HERDR_BIN pane split ${HERDR_ACTIVE_PANE_ID:+--pane "$HERDR_ACTIVE_PANE_ID"} --direction right --cwd "$SPLIT_CWD" --focus)
 NEW_PANE_ID=$(echo "$NEW_PANE_JSON" | python3 -c 'import sys,json; print(json.load(sys.stdin)["result"]["pane"]["pane_id"])')
 
 # Run nvim with Oil on the new pane, then exit to close the pane
