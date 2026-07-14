@@ -39,26 +39,17 @@ return {
       },
     },
     config = function(_, opts)
-      local mason_lsp = require('mason-lspconfig')
-      mason_lsp.setup(opts)
-
-      local lspconfig = require('lspconfig')
-      mason_lsp.setup_handlers({
-        function(server_name)
-          lspconfig[server_name].setup({})
-        end,
-        ['yamlls'] = function()
-          lspconfig.yamlls.setup({
-            settings = {
-              yaml = {
-                schemaStore = {
-                  enable = true,
-                },
-              },
+      vim.lsp.config['yamlls'] = {
+        settings = {
+          yaml = {
+            schemaStore = {
+              enable = true,
             },
-          })
-        end,
-      })
+          },
+        },
+      }
+
+      require('mason-lspconfig').setup(opts)
     end,
   },
 }
