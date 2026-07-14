@@ -3,8 +3,7 @@ return {
     'neovim/nvim-lspconfig',
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
-      local lspconfig = require('lspconfig')
-      lspconfig.yamlls.setup({
+      vim.lsp.config['yamlls'] = {
         cmd = { 'yaml-language-server', '--stdio' },
         settings = {
           yaml = {
@@ -13,7 +12,8 @@ return {
             },
           },
         },
-      })
+      }
+      vim.lsp.enable('yamlls')
     end,
   },
 }
