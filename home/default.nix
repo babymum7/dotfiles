@@ -18,6 +18,7 @@
     pkgs.fnm
     pkgs.stdenv.cc
     pkgs.tree-sitter
+    pkgs.yaml-language-server
   ];
 
   # Basic Git configuration (adjust to your preference)
