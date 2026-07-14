@@ -9,3 +9,7 @@ vim.cmd([[ xnoremap <expr> p 'pgv"'.v:register.'y' ]])
 vim.keymap.set('x', '<leader>a', function()
   require('herdr_helper').add_visual_selection_to_agent()
 end, { desc = 'Add visual selection to herdr agent' })
+-- Diagnostic navigation and line inspection
+vim.keymap.set('n', 'gl', vim.diagnostic.open_float, { desc = 'Show line diagnostics' })
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Previous diagnostic' })
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Next diagnostic' })
