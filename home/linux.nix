@@ -1,4 +1,4 @@
-{ user, ... }: {
+{ pkgs, lib, user, ... }: {
   imports = [ ./default.nix ];
 
   home.username = user;
@@ -8,4 +8,19 @@
   home.stateVersion = "24.11";
 
   targets.genericLinux.enable = true;
+
+  home.activation = {
+    ensureHerdr = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      if ! command -v herdr &>/dev/null && [ ! -x "$HOME/.local/bin/herdr" ]; then
+        echo "herdr not found. Installing herdr via official installer..."
+        $DRY_RUN_CMD ${pkgs.curl}/bin/curl -fsSL https://herdr.dev/install.sh | $DRY_RUN_CMD ${pkgs.bash}/bin/bash || true
+      fi
+    '';
+    ensureBun = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      if [ ! -x "$HOME/.bun/bin/bun" ]; then
+        echo "Bun not found. Installing Bun via official installer..."
+        $DRY_RUN_CMD ${pkgs.curl}/bin/curl -fsSL https://bun.sh/install | $DRY_RUN_CMD ${pkgs.bash}/bin/bash || true
+      fi
+    '';
+  };
 }
