@@ -39,7 +39,7 @@ return {
       },
     },
     config = function(_, opts)
-      vim.lsp.config['yamlls'] = {
+      vim.lsp.config('yamlls', {
         settings = {
           yaml = {
             schemaStore = {
@@ -47,7 +47,7 @@ return {
             },
           },
         },
-      }
+      })
 
       require('mason-lspconfig').setup(opts)
     end,
