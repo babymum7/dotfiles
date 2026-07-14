@@ -1,4 +1,4 @@
-{ config, pkgs, user, ... }:
+{ config, lib, pkgs, user, ... }:
 
 {
   # Common session PATH for all shells and SSH logins
@@ -100,5 +100,12 @@
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home/nvim";
   home.file.".omp/agent/config.yml".source =
     config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home/omp/agent/config.yml";
-
+  home.activation = {
+    ensureBun = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      if [ ! -x "$HOME/.bun/bin/bun" ]; then
+        echo "Bun not found. Installing Bun via official installer..."
+        $DRY_RUN_CMD ${pkgs.curl}/bin/curl -fsSL https://bun.sh/install | $DRY_RUN_CMD ${pkgs.bash}/bin/bash || true
+      fi
+    '';
+  };
 }
