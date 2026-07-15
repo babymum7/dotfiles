@@ -65,12 +65,6 @@ stt:
   enabled: false
 retry: 
   fallbackChains: 
-    advisor: 
-      - anthropic/claude-opus-4-8
-    designer: 
-      - xai-oauth/grok-4.5
-      - openai-codex/gpt-5.6-sol
-    slow: 
-      - xai-oauth/grok-4.5
-    plan: 
-      - anthropic/claude-opus-4-8
+    {}
+prewalk: 
+  enabled: false

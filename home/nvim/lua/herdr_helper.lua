@@ -127,10 +127,15 @@ function M.add_visual_selection_to_agent()
   -- Get file path and filetype
   local filepath = vim.api.nvim_buf_get_name(0)
   local filetype = vim.bo.filetype
+  local start_line = start_pos[2]
+  local end_line = end_pos[2]
+  if start_line > end_line then
+    start_line, end_line = end_line, start_line
+  end
+  local line_range = (start_line == end_line) and tostring(start_line) or string.format("%d-%d", start_line, end_line)
 
   -- Format message
-  local msg = string.format("[Code Selection from %s]\n```%s\n%s\n```", filepath, filetype, selection)
-
+  local msg = string.format("[Code Selection from %s:%s]\n```%s\n%s\n```", filepath, line_range, filetype, selection)
   -- Send to agent
   if send_to_agent(pane_id, msg) then
     vim.notify("Sent code selection to agent.", vim.log.levels.INFO)
