@@ -36,6 +36,8 @@ return {
     opts = {
       ensure_installed = {
         'yamlls',
+        'gopls',
+        'rust_analyzer',
       },
     },
     config = function(_, opts)
@@ -44,6 +46,31 @@ return {
           yaml = {
             schemaStore = {
               enable = true,
+            },
+          },
+        },
+      })
+
+      vim.lsp.config('gopls', {
+        settings = {
+          gopls = {
+            analyses = {
+              unusedparams = true,
+            },
+            staticcheck = true,
+            gofumpt = true,
+          },
+        },
+      })
+
+      vim.lsp.config('rust_analyzer', {
+        settings = {
+          ['rust-analyzer'] = {
+            cargo = {
+              allFeatures = true,
+            },
+            checkOnSave = {
+              command = 'clippy',
             },
           },
         },

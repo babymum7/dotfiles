@@ -16,6 +16,10 @@
     pkgs.fd
     pkgs.fzf
     pkgs.fnm
+    pkgs.go
+    pkgs.cargo
+    pkgs.rustc
+    pkgs.clippy
     pkgs.stdenv.cc
   ];
 
